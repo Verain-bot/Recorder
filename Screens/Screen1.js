@@ -4,7 +4,7 @@ import {Audio} from 'expo-av'
 import {store,addRecording,removeRecording} from '../redux'
 import {connect} from 'react-redux'
 import Row from './Components/RecordingRow'
-import { Recording } from 'expo-av/build/Audio'
+
 class App extends React.Component
 {
     state={

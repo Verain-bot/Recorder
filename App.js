@@ -7,13 +7,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import { createDrawerNavigator} from '@react-navigation/drawer';
 import {createStackNavigator} from '@react-navigation/stack'
 import {Provider} from 'react-redux'
-import {store} from './redux'
+import {store,persistor} from './redux'
+import { PersistGate } from 'redux-persist/integration/react'
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator()
 
 const x = ({navigation}) => (
   <Provider store={store} >
+    <PersistGate loading={null} persistor={persistor} >
     <Stack.Navigator
     screenOptions={{headerLeft: () => <Ionicons.Button name='ios-menu' 
       size={24} 
@@ -28,6 +30,7 @@ const x = ({navigation}) => (
     >
       <Stack.Screen name="Home" component={Screen1} />
     </Stack.Navigator>
+    </PersistGate>
     </Provider>
 )
 
