@@ -1,9 +1,10 @@
 import React from 'react'
-import {View,StyleSheet,Text,Button} from 'react-native'
+import {View,StyleSheet,Text,Button,ScrollView} from 'react-native'
 import {Audio} from 'expo-av'
 import {store,addRecording,removeRecording} from '../redux'
 import {connect} from 'react-redux'
 import Row from './Components/RecordingRow'
+
 
 class App extends React.Component
 {
@@ -85,15 +86,23 @@ class App extends React.Component
         }
     }
 
+    multiToOne = async()=>
+    {
+        this.props.addRecording("MULTIPLE",this.props.recordings)
+    }
+    
     render()
     {
         return(
             <View style={styles.appContainer} >
                 <Button title="begin" onPress={this.record} />
                 <Button title="STOP" onPress={this.stop} />
+                <Button title="Multiple To One" onPress={this.multiToOne} />
                 <Text>Recording:  {this.state.recording.toString()}</Text>
                 <Text>{this.state.errMessage}</Text>
+                <ScrollView>
                 {this.props.recordings.map( ({RecordingName,RecordingUri},key)=> <Row RecordingName={RecordingName} key={key} RecordingUri={RecordingUri} /> )}
+                </ScrollView>
             </View>
         )
 

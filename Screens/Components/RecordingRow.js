@@ -12,15 +12,39 @@ class App extends React.Component
     onPlay = async () =>
     {
         try{
-            const sound = new Audio.Sound()
-            await sound.loadAsync({uri: this.props.RecordingUri})
-            await sound.playAsync()
+            if(typeof this.props.RecordingUri === 'string')
+            {
+                this.playSound(this.props.RecordingUri)
+            }
+            else
+            {
+                const array = this.props.RecordingUri
+                this.playSound(array[0].RecordingUri,array.slice(1))
+            }
         }
         catch(error)
         {
             alert(error.message)
         }
     }
+
+    playSound = async (uri, next=null)=>
+    {
+        const sound = new Audio.Sound()
+        await sound.loadAsync({uri: uri})
+        await sound.playAsync()
+        sound.setOnPlaybackStatusUpdate(async ({didJustFinish}) =>{
+            if(didJustFinish)
+            {
+                sound.unloadAsync()
+                if(next[0])
+                {
+                    this.playSound(next[0].RecordingUri,next.slice(1))
+                }
+            }
+        })
+    }
+
 
     onRemove = async()=>
     {
@@ -46,7 +70,7 @@ class App extends React.Component
         return(
                 <TouchableOpacity style={styles.appContainer}>
                         <Text>{this.props.RecordingName}</Text>
-                        <Text>{this.props.RecordingUri}</Text>
+                        <Text>{typeof this.props.RecordingUri === "string"?this.props.RecordingUri:"Multi"}</Text>
                         <Ionicons.Button name="add" size={24} onPress={this.onAdd} />
                         <Ionicons.Button name="remove" size={24} onPress={this.onRemove} />
                         <Ionicons.Button name="play" size={24} onPress={this.onPlay} />
