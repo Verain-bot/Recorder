@@ -4,7 +4,7 @@ import {TouchableOpacity} from 'react-native-gesture-handler'
 import {Audio} from 'expo-av'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {connect} from 'react-redux'
-import {store,addRecording,removeRecording} from '../../redux'
+import {addRecording,removeRecording} from '../../redux'
 import * as FileSystem from 'expo-file-system'
 
 class App extends React.Component
@@ -28,7 +28,7 @@ class App extends React.Component
         }
     }
 
-    playSound = async (uri, next=null)=>
+    playSound = async (uri, next=[])=>
     {
         const sound = new Audio.Sound()
         await sound.loadAsync({uri: uri})

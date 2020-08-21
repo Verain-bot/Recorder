@@ -1,9 +1,10 @@
 import React from 'react'
 import {View,StyleSheet,Text,Button,ScrollView} from 'react-native'
 import {Audio} from 'expo-av'
-import {store,addRecording,removeRecording} from '../redux'
+import {store,addRecording,removeRecording,addTempRecording,removeTempRecording} from '../redux'
 import {connect} from 'react-redux'
 import Row from './Components/RecordingRow'
+import * as FileSystem from 'expo-file-system'
 
 
 class App extends React.Component
@@ -11,7 +12,7 @@ class App extends React.Component
     state={
         errMessage: "",
         recording: false,
-        number: 0,
+        totalTime: 4000,
     }
 
     checkPermission = async() =>
@@ -21,61 +22,49 @@ class App extends React.Component
             throw "ERROR"
     }
 
+    start = async()=>
+    {   
+        this.setState({recording: true})
+        this.recordFor(2000)
+
+        /*this.interval = setInterval(async()=>{
+            const y = await this.recordFor(2000)
+            this.props.addRecording('TEMP',y)
+        },2050)*/
+    }
+
     stop = async()=>
     {
-        let z= await this.recording.stopAndUnloadAsync()
-        console.log(z)
-        let as = await this.recording.createNewLoadedSoundAsync({shouldPlay: true,isLooping:false},null)
-        console.log(as)
-        await as.sound.playAsync()
-        z = await this.recording.getStatusAsync()
-        this.setState({status: z.isRecording})
+        this.setState({recording: false})
+        //clearInterval(this.interval)
     }
 
-
-    record = async () =>
+    removeRecording = async(uri)=>
     {
-        try
-        {   
-            if(!this.state.recording)
-            {
-                const recording = new Audio.Recording()
-                let y = await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY)
-                console.log(y)
-
-                y = await recording.startAsync()
-                console.log(y)
-
-                y = await recording.getStatusAsync()
-                console.log(y)
-
-                const fun = async() =>
-                {
-                    await recording.stopAndUnloadAsync()
-                    let asd = await recording.getStatusAsync()
-                    console.log(asd)
-                    let uri = recording.getURI()
-                    this.props.addRecording("VERAIN",uri)
-                    
-                }
-
-                setTimeout(fun,5000)
-                y = await recording.getStatusAsync()
-                console.log(y)
-            }
-            else
-            {
-                let z= await recording.stopAndUnloadAsync()
-                console.log(z)
-            }
-        }
-
-        catch(error)
-        {
-            this.setState({errMessage: error.message})
-        }
-        
+        this.props.removeRecording(uri)
+        await FileSystem.deleteAsync(uri)
     }
+
+    recordFor = async(duration)=>
+    {
+        const recording = new Audio.Recording()
+        await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY)
+        await recording.startAsync()
+        recording.setOnRecordingStatusUpdate(({durationMillis,canRecord})=>{
+            if(canRecord && durationMillis>=duration)
+            {
+                recording.stopAndUnloadAsync()
+                this.props.addRecording('TEMP',recording.getURI())
+                if(this.state.recording)
+                    setTimeout(()=>this.recordFor(duration),100)
+                if(this.props.recordings.length*duration>this.state.totalTime){
+                    this.removeRecording(this.props.recordings[0].RecordingUri)
+                }
+            }
+        })
+        return recording.getURI()
+    }
+
     componentDidMount()
     {
         try{
@@ -95,7 +84,7 @@ class App extends React.Component
     {
         return(
             <View style={styles.appContainer} >
-                <Button title="begin" onPress={this.record} />
+                <Button title="begin" onPress={this.start} />
                 <Button title="STOP" onPress={this.stop} />
                 <Button title="Multiple To One" onPress={this.multiToOne} />
                 <Text>Recording:  {this.state.recording.toString()}</Text>
@@ -120,4 +109,4 @@ const mapStateToProps = (state) =>({
     recordings: state.recording,
 })
 
-export default connect(mapStateToProps,{addRecording,removeRecording},null)(App)
+export default connect(mapStateToProps,{addRecording,removeRecording,addTempRecording,removeTempRecording},null)(App)
