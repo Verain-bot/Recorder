@@ -9,6 +9,8 @@ import {createStackNavigator} from '@react-navigation/stack'
 import {Provider} from 'react-redux'
 import {store,persistor} from './redux'
 import { PersistGate } from 'redux-persist/integration/react'
+import Screen3 from './Screens/Screen3'
+
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator()
@@ -51,6 +53,23 @@ const y = ({navigation}) => (
     </Stack.Navigator>
 )
 
+const z = ({navigation}) => (
+  <Stack.Navigator
+  screenOptions={{headerLeft: () => <Ionicons.Button name='ios-menu' 
+    size={24} 
+    backgroundColor="purple" 
+    onPress={navigation.openDrawer}
+    />,
+  headerTitleAlign: 'center',
+  headerStyle: {backgroundColor: 'purple'},
+  headerTitleStyle: {color: 'white'},
+  }}
+  headerMode="float"
+  >
+      <Stack.Screen name="Settings" component={Screen3} />
+    </Stack.Navigator>
+)
+
 class App extends React.Component
 {
   render()
@@ -75,6 +94,11 @@ class App extends React.Component
         <Drawer.Screen name="About Us" 
         component={y}
         options={{drawerIcon: ({focused, color, size})=> (<Ionicons color={color} size={size} name={focused? 'at-circle':'at-sharp'} />)}} 
+        />
+
+        <Drawer.Screen name="Settings"  
+        component={z}
+        options={{drawerIcon: ({focused, color, size})=> (<Ionicons color={color} size={size} name={focused? 'ios-settings':'ios-settings-outline'} />)}} 
         />
       </Drawer.Navigator>
     </NavigationContainer>
