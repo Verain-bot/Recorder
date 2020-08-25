@@ -15,7 +15,7 @@ class App extends React.Component
                         {this.props.element()}
                     </View>
                 </TouchableOpacity>
-                <Text style={styles.bottomText}>{this.props.message}</Text>
+                    <Text style={styles.bottomText}>{this.props.message}</Text>
             </View>
         )
     }
@@ -31,6 +31,7 @@ const styles = StyleSheet.create({
     mainView:{
         borderBottomWidth: 2,
         borderColor: '#979695',
+        alignSelf:'stretch',
     },
     right:{
         alignItems: 'flex-end',
