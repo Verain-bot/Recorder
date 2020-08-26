@@ -1,8 +1,20 @@
 import React from 'react'
 import {Text,StyleSheet, View} from 'react-native'
 import {TouchableOpacity} from 'react-native-gesture-handler'
-import Ionicons from 'react-native-vector-icons/AntDesign'
-//<Ionicons.Button name="right" color="#979695" backgroundColor="" />
+
+export class CustomButton extends React.Component
+{
+    render()
+    {
+        return(
+            <TouchableOpacity style={styles.button} onPress={this.props.onPress} >
+                <Text style={styles.buttonText}>{this.props.title}</Text>
+            </TouchableOpacity>
+        )
+    }
+}
+
+
 class App extends React.Component
 {
     render()
@@ -46,6 +58,19 @@ const styles = StyleSheet.create({
         color: '#979695',
         padding: 8,
     },
+    button:
+    {
+        backgroundColor: 'purple',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+        marginTop: 10,
+    },
+    buttonText:
+    {
+        color: 'white',
+        fontWeight: 'bold',
+    }
 })
 
 export default App

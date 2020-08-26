@@ -1,8 +1,7 @@
 import React from 'react'
-import {StyleSheet,View,Text,Button,Switch,Modal} from 'react-native'
-import Row from './Components/SettingsRow'
+import {StyleSheet,View,Text,Switch,ScrollView} from 'react-native'
+import Row,{CustomButton} from './Components/SettingsRow'
 import Settings from './Components/Settings'
-import Wheel from './Components/ScrollWheel'
 import ModalScreen from './Components/Modal'
 import Ionicons from 'react-native-vector-icons/AntDesign'
 import {WheelPicker,TimePicker} from 'react-native-wheel-picker-android'
@@ -18,11 +17,11 @@ class App extends React.Component
         Modal3: false,
         sleepTime: {
             enable: false,
-            from: null,
-            to: null,
+            from: new Date(),
+            to: new Date(),
         },
-        RecordingTime: 5,
-        WaitTime: 0,
+        RecordingTime: {index: 0,val: 0},
+        WaitTime: {index: 0,val: 0},
     }
     onValueChange = ()=>{
         this.setState((prevState)=>({
@@ -53,6 +52,7 @@ class App extends React.Component
         let Modal2Data = [0,5,10,20,25,50,75,100,150,200,300,500]
         Modal2Data = Modal2Data.map((value)=>(value.toString()))
         this.setState({Modal2Data})
+
     }
 
     changeSleepTimeSwitch = ()=>
@@ -64,18 +64,30 @@ class App extends React.Component
 
     onSelectModal1 = (selectedItem)=>
     {
-        this.setState({RecordingTime: this.state.Modal1Data[selectedItem] })
+        this.setState({RecordingTime: {val: this.state.Modal1Data[selectedItem], index: selectedItem} })
     }
+
+
     onSelectModal2 = (selectedItem)=>
     {
-        this.setState({WaitTime: this.state.Modal2Data[selectedItem] })
+        this.setState({WaitTime: {val: this.state.Modal2Data[selectedItem],index: selectedItem} })
+    }
+
+    onSelectModal3 = (selectedTime)=>
+    {
+        this.setState({sleepTime: {...this.state.sleepTime,from: selectedTime}})
+    }
+
+    onSelectModal4 = (selectedTime)=>
+    {
+        this.setState({sleepTime: {...this.state.sleepTime,to: selectedTime}})
     }
 
     render()
     {
         return(
-            <View>
-                <Row element={()=> <Switch value={this.state.High_Quality}  onValueChange={this.onValueChange}/>} 
+            <ScrollView>
+                <Row element={()=> <Switch value={this.state.High_Quality}  onValueChange={this.onValueChange} onTouchStart={this.onValueChange} />} 
                 name='High Quality Recording'
                 disabled={true}
                 message={Settings.Recording_Quality.message}
@@ -84,7 +96,7 @@ class App extends React.Component
                 <Row element={()=>(
                     <View>
                         <ModalScreen title="Recording Time" visible={this.state.Modal1} change={this.change1} component={()=> (
-                            <WheelPicker data={this.state.Modal1Data} indicatorWidth={1} initPosition={2} onItemSelected={this.onSelectModal1} />
+                            <WheelPicker data={this.state.Modal1Data} indicatorWidth={1}  onItemSelected={this.onSelectModal1} selectedItem={this.state.RecordingTime.index} />
                         ) } />
                         <Ionicons.Button name="right" color="#979695" backgroundColor="" />
                     </View>
@@ -98,7 +110,7 @@ class App extends React.Component
                 <Row element={()=>(
                     <View>
                         <ModalScreen title="Wait Time" visible={this.state.Modal2} change={this.change2} component={()=> (
-                            <WheelPicker data={this.state.Modal2Data} indicatorWidth={1} initPosition={2} />
+                            <WheelPicker data={this.state.Modal2Data} indicatorWidth={1}  onItemSelected={this.onSelectModal2} selectedItem={this.state.WaitTime.index} />
                         ) } />
                         <Ionicons.Button name="right" color="#979695" backgroundColor="" />
                     </View>
@@ -114,14 +126,14 @@ class App extends React.Component
                         <ModalScreen title="Sleep Time" visible={this.state.Modal3} change={this.change3} component={()=> (
                             <View style={{flex: 1,alignItems: 'center',alignSelf: 'stretch'}}>
                                 <Row name="Enable"
-                                element={()=><Switch value={this.state.sleepTime.enable} onValueChange={this.changeSleepTimeSwitch} />}
+                                element={()=><Switch value={this.state.sleepTime.enable} onValueChange={this.changeSleepTimeSwitch} onTouchStart={this.changeSleepTimeSwitch} />}
                                 message="Enable Sleep Time"
                                 />
                                 {this.state.sleepTime.enable?<View style={{flex: 1,alignItems: 'center',justifyContent: 'center'}}>
                                     <Text style={{paddingTop: 0}}> From: </Text>
-                                    <TimePicker />
+                                    <TimePicker onTimeSelected={this.onSelectModal3} initDate={this.state.sleepTime.from} />
                                     <Text style={{paddingTop: 0}}> To: </Text>
-                                    <TimePicker />
+                                    <TimePicker onTimeSelected={this.onSelectModal4} initDate={this.state.sleepTime.to} />
                                 </View>:<View />}
                             </View>
                         ) } />
@@ -133,11 +145,14 @@ class App extends React.Component
                 onPress={this.change3}
                 message={Settings.Sleep_Time.message}
                 />
+                <CustomButton title="Save Settings"  />
+                <CustomButton title="Restore to defaults" />
+
                 <Text>{this.state.High_Quality.toString()}</Text>
-                <Text>{this.state.RecordingTime.toString()}</Text>
-                <Text>{this.state.WaitTime.toString()}</Text>
-                <Text></Text>
-            </View>
+                <Text>{this.state.RecordingTime.val.toString()}</Text>
+                <Text>{this.state.WaitTime.val.toString()}</Text>
+                <Text>{this.state.sleepTime.to.toString()}</Text>
+            </ScrollView>
         )
     }
 }
