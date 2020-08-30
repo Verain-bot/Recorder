@@ -54,6 +54,8 @@ const y = ({navigation}) => (
 )
 
 const z = ({navigation}) => (
+  <Provider store={store}>
+  <PersistGate loading={null} persistor={persistor} >
   <Stack.Navigator
   screenOptions={{headerLeft: () => <Ionicons.Button name='ios-menu' 
     size={24} 
@@ -68,6 +70,8 @@ const z = ({navigation}) => (
   >
       <Stack.Screen name="Settings" component={Screen3} />
     </Stack.Navigator>
+  </PersistGate>
+  </Provider>
 )
 
 class App extends React.Component

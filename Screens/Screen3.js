@@ -5,11 +5,13 @@ import Settings from './Components/Settings'
 import ModalScreen from './Components/Modal'
 import Ionicons from 'react-native-vector-icons/AntDesign'
 import {WheelPicker,TimePicker} from 'react-native-wheel-picker-android'
+import {changeSetting,changeToDefault} from '../redux'
+import {connect} from 'react-redux'
 
 class App extends React.Component
 {
     state = {
-        High_Quality: true,
+        High_Quality: this.props.settings.Recording_Quality.currentValue,
         Modal1: false,
         Modal1Data: null,
         Modal2: false,
@@ -83,14 +85,42 @@ class App extends React.Component
         this.setState({sleepTime: {...this.state.sleepTime,to: selectedTime}})
     }
 
+    timeString = ()=>
+    {
+        try{
+            const time = `${this.state.sleepTime.from.toLocaleTimeString().substr(0,5)} - ${this.state.sleepTime.to.toLocaleTimeString().substr(0,5)}`
+            return time
+        }
+        catch(err)
+        {
+            return ''
+        }
+
+    }
+
+    onSave = ()=>
+    {
+        this.props.changeSetting('Recording_Quality',this.state.High_Quality)
+        this.props.changeSetting('Recording_Time',this.state.RecordingTime.val)
+        this.props.changeSetting('Wait_time',this.state.WaitTime.val)
+        this.props.changeSetting('Sleep_Time',this.state.sleepTime)
+        console.log(this.props.settings)
+    }
+
+    onDefault = () =>
+    {
+        this.props.changeToDefault()
+    }
+
     render()
     {
         return(
             <ScrollView>
-                <Row element={()=> <Switch value={this.state.High_Quality}  onValueChange={this.onValueChange} onTouchStart={this.onValueChange} />} 
+                <Row element={()=> <Switch value={this.state.High_Quality} onTouchStart={this.onValueChange} />} 
                 name='High Quality Recording'
                 disabled={true}
                 message={Settings.Recording_Quality.message}
+                state={this.state.High_Quality?"On":"Off"}
                 />
 
                 <Row element={()=>(
@@ -105,6 +135,7 @@ class App extends React.Component
                 disabled={false}
                 onPress={this.change1}
                 message={Settings.Recording_Time.message}
+                state={this.state.RecordingTime.val+" mins"}
                 />
 
                 <Row element={()=>(
@@ -119,6 +150,7 @@ class App extends React.Component
                 disabled={false}
                 onPress={this.change2}
                 message={Settings.Wait_time.message}
+                state={this.state.WaitTime.val+" ms"}
                 />
                 
                 <Row element={()=>(
@@ -126,7 +158,7 @@ class App extends React.Component
                         <ModalScreen title="Sleep Time" visible={this.state.Modal3} change={this.change3} component={()=> (
                             <View style={{flex: 1,alignItems: 'center',alignSelf: 'stretch'}}>
                                 <Row name="Enable"
-                                element={()=><Switch value={this.state.sleepTime.enable} onValueChange={this.changeSleepTimeSwitch} onTouchStart={this.changeSleepTimeSwitch} />}
+                                element={()=><Switch value={this.state.sleepTime.enable}  onTouchStart={this.changeSleepTimeSwitch} />}
                                 message="Enable Sleep Time"
                                 />
                                 {this.state.sleepTime.enable?<View style={{flex: 1,alignItems: 'center',justifyContent: 'center'}}>
@@ -144,19 +176,18 @@ class App extends React.Component
                 disabled={false}
                 onPress={this.change3}
                 message={Settings.Sleep_Time.message}
+                state={this.timeString()}
                 />
-                <CustomButton title="Save Settings"  />
-                <CustomButton title="Restore to defaults" />
-
-                <Text>{this.state.High_Quality.toString()}</Text>
-                <Text>{this.state.RecordingTime.val.toString()}</Text>
-                <Text>{this.state.WaitTime.val.toString()}</Text>
-                <Text>{this.state.sleepTime.to.toString()}</Text>
+                <CustomButton title="Save Settings"  onPress={this.onSave} />
+                <CustomButton title="Restore to defaults" onPress={this.onDefault} />
+                
             </ScrollView>
         )
     }
 }
 
+const mapStateToProps = (state)=>({
+    settings: state.settings,
+})
 
-
-export default App
+export default connect(mapStateToProps,{changeSetting,changeToDefault},null)(App)

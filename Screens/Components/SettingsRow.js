@@ -22,7 +22,10 @@ class App extends React.Component
         return(
             <View style={styles.mainView} >
                 <TouchableOpacity style={styles.appContainer} disabled={this.props.disabled} onPress={this.props.onPress}>
-                    <View style={styles.left}><Text>{this.props.name}</Text></View>
+                    <View style={styles.left}>
+                        <Text style={{fontSize: 16}}>{this.props.name}</Text>
+                        {typeof this.props.state==='string'?<Text style={{fontSize: 12,color: 'grey'}}>{this.props.state}</Text>:<Text/>}
+                    </View>
                     <View style={styles.right}>
                         {this.props.element()}
                     </View>

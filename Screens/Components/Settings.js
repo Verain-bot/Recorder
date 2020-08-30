@@ -2,12 +2,8 @@ import {Audio} from 'expo-av'
 
 const settings ={
     Recording_Quality: {
-        default: Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
-        options:[
-            {displayName: "High", value: Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY},
-            {displayName: "Low", value: Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY},
-        ],
-        currentValue: Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY,
+        default: true,
+        currentValue: false,
         message: 'For better recording experience turn it to High but it may increase battery consumption.'
     },
     Recording_Time: {

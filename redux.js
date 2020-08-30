@@ -1,12 +1,14 @@
 import {createStore,combineReducers} from 'redux'
 import {persistStore,persistReducer} from 'redux-persist'
 import AsyncStorage from '@react-native-community/async-storage'
+import Settings from './Screens/Components/Settings'
 
 const ADD_RECORDING = 'ADD_RECORDING'
 const REMOVE_RECORDING = 'REMOVE_RECORDING'
 const ADD_TEMP_RECORDING = 'ADD_TEMP_RECORDING'
 const REMOVE_TEMP_RECORDING = 'REMOVE_TEMP_RECORDING'
-
+const CHANGE_SETTING = 'CHANGE_SETTING'
+const SET_DEFAULT_SETTINGS = 'SET_DEFAULT_SETTINGS'
 
 const persistConfig = {
     key: 'root',
@@ -39,9 +41,37 @@ const tempRecordingReducer = (state=[],action) =>
     }
 }
 
+const settingsReducer = (state=Settings,action)=>
+{
+    switch(action.type)
+    {
+        case CHANGE_SETTING:{
+            return({...state, [action.name]: {...state[action.name], currentValue: action.payload} })
+        }
+        case SET_DEFAULT_SETTINGS:{
+            return(Settings)
+        }
+        default:
+            return state
+    }
+}
+
+export const changeSetting = (name,newValue)=>
+({
+    type: CHANGE_SETTING,
+    payload: newValue,
+    name: name,
+})
+
+export const changeToDefault = ()=>
+({
+    type: SET_DEFAULT_SETTINGS,
+})
+
 const Reducer = combineReducers({
     recording: recordingReducer,
     tempRecording: tempRecordingReducer,
+    settings: settingsReducer,
 })
 
 const persistedReducer = persistReducer(persistConfig,Reducer)
