@@ -9,9 +9,14 @@ import * as FileSystem from 'expo-file-system'
 
 class App extends React.Component
 {
+    state = {
+        URI: null,
+    }
+
     onPlay = async () =>
     {
         try{
+            console.log(this.props.RecordingUri)
             if(typeof this.props.RecordingUri === 'string')
             {
                 this.playSound(this.props.RecordingUri)
@@ -19,7 +24,7 @@ class App extends React.Component
             else
             {
                 const array = this.props.RecordingUri
-                this.playSound(array[0].RecordingUri,array.slice(1))
+                this.playSound(array[0],array.slice(1))
             }
         }
         catch(error)
@@ -39,7 +44,7 @@ class App extends React.Component
                 sound.unloadAsync()
                 if(next[0])
                 {
-                    this.playSound(next[0].RecordingUri,next.slice(1))
+                    this.playSound(next[0],next.slice(1))
                 }
             }
         })
@@ -52,19 +57,7 @@ class App extends React.Component
         this.props.removeRecording(this.props.RecordingUri)
     }
 
-    onAdd = async()=>
-    {
-        try{
-            let download = await FileSystem.moveAsync({from:this.props.RecordingUri,to:FileSystem.documentDirectory+"Verain.m4a"})
-            console.log(download)
-            this.props.addRecording('Downloaded',FileSystem.documentDirectory+"Verain.m4a")
-            this.onRemove()
-        }
-        catch(error)
-        {
-            alert(error.message)
-        }
-    }
+
     render()
     {
         return(

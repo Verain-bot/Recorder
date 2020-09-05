@@ -19,9 +19,9 @@ const settings ={
     },
     
     Sleep_Time:{
-        default: null,
+        default: {to: new Date(),from: new Date(),enable: false},
         message: "Specify the time period in which you don't want to record.",
-        currentValue: null,
+        currentValue: {to: new Date(),from: new Date(),enable: false},
     },
 }
 

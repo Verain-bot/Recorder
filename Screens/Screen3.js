@@ -17,13 +17,9 @@ class App extends React.Component
         Modal2: false,
         Modal2Data: null,
         Modal3: false,
-        sleepTime: {
-            enable: false,
-            from: new Date(),
-            to: new Date(),
-        },
-        RecordingTime: {index: 0,val: 0},
-        WaitTime: {index: 0,val: 0},
+        sleepTime: this.props.settings.Sleep_Time.currentValue,
+        RecordingTime: {index: 0,val: this.props.settings.Recording_Time.currentValue},
+        WaitTime: {index: 0,val: this.props.settings.Wait_time.currentValue},
     }
     onValueChange = ()=>{
         this.setState((prevState)=>({
@@ -88,6 +84,8 @@ class App extends React.Component
     timeString = ()=>
     {
         try{
+            if (!this.state.sleepTime.enable)
+                return 'Off'
             const time = `${this.state.sleepTime.from.toLocaleTimeString().substr(0,5)} - ${this.state.sleepTime.to.toLocaleTimeString().substr(0,5)}`
             return time
         }

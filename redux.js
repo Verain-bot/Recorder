@@ -9,6 +9,7 @@ const ADD_TEMP_RECORDING = 'ADD_TEMP_RECORDING'
 const REMOVE_TEMP_RECORDING = 'REMOVE_TEMP_RECORDING'
 const CHANGE_SETTING = 'CHANGE_SETTING'
 const SET_DEFAULT_SETTINGS = 'SET_DEFAULT_SETTINGS'
+const CLEAR_TEMP = 'CLEAR_TEMP'
 
 const persistConfig = {
     key: 'root',
@@ -35,7 +36,9 @@ const tempRecordingReducer = (state=[],action) =>
         case ADD_TEMP_RECORDING:
             return [...state,action.payload]
         case REMOVE_TEMP_RECORDING:
-            return state.filter(({RecordingUri})=> RecordingUri!==action.payload)
+            return state.filter( ({RecordingUri})=> RecordingUri!==action.payload )
+        case CLEAR_TEMP:
+            return []
         default:
             return state
     }
@@ -63,6 +66,10 @@ export const changeSetting = (name,newValue)=>
     name: name,
 })
 
+export const clearTemp = ()=>({
+    type: CLEAR_TEMP,
+})
+
 export const changeToDefault = ()=>
 ({
     type: SET_DEFAULT_SETTINGS,
@@ -81,9 +88,9 @@ export const addRecording = (RecordingName, RecordingUri) =>({
     payload: {RecordingName: RecordingName,RecordingUri: RecordingUri},
 })
 
-export const addTempRecording = (RecordingName,RecordingUri) =>({
+export const addTempRecording = (RecordingUri) =>({
     type: ADD_TEMP_RECORDING,
-    payload: {RecordingName: RecordingName,RecordingUri: RecordingUri},
+    payload: {RecordingUri: RecordingUri},
 })
 
 export const removeRecording = (RecordingUri) =>({

@@ -12,6 +12,8 @@ target 'Recorder2' do
 
   pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-community/async-storage'
 
+  pod 'react-native-background-timer', :path => '../node_modules/react-native-background-timer'
+
   target 'Recorder2Tests' do
     inherit! :complete
     # Pods for testing
