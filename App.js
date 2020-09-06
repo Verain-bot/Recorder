@@ -10,10 +10,28 @@ import {Provider} from 'react-redux'
 import {store,persistor} from './redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import Screen3 from './Screens/Screen3'
-
+import Screen4 from './Screens/Screen4'
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator()
+
+const recordings = ({navigation}) => (
+    <Stack.Navigator
+    screenOptions={{headerLeft: () => <Ionicons.Button name='ios-menu' 
+      size={24} 
+      backgroundColor="purple" 
+      onPress={navigation.openDrawer}
+      />,
+    headerTitleAlign: 'center',
+    headerStyle: {backgroundColor: 'purple'},
+    headerTitleStyle: {color: 'white'},
+    }}
+    headerMode="float"
+    >
+      <Stack.Screen name="Recordings" component={Screen4} />
+    </Stack.Navigator>
+)
+
 
 const x = ({navigation}) => (
   <Provider store={store} >
@@ -88,6 +106,7 @@ class App extends React.Component
         style: styles.List,
         inactiveTintColor: 'white',
       }}
+      initialRouteName="Recordings"
       >
 
         <Drawer.Screen name="Home" 
@@ -103,6 +122,11 @@ class App extends React.Component
         <Drawer.Screen name="Settings"  
         component={z}
         options={{drawerIcon: ({focused, color, size})=> (<Ionicons color={color} size={size} name={focused? 'ios-settings':'ios-settings-outline'} />)}} 
+        />
+
+        <Drawer.Screen name='Recordings'
+        component={recordings}
+        options={{drawerIcon: ({focused, color, size})=> (<Ionicons color={color} size={size} name={focused? 'ios-recording':'ios-recording-outline'} />)}} 
         />
       </Drawer.Navigator>
     </NavigationContainer>

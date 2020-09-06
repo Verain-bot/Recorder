@@ -118,13 +118,7 @@ class App extends React.Component
     {
         return(
             <View style={styles.appContainer} >
-                <Button title="begin" onPress={this.start} />
-                <Button title="STOP" onPress={this.stop} />
-                <Text>Recording:  {this.state.recording.toString()}</Text>
-                <Text>{this.state.errMessage}</Text>
-                <ScrollView>
-                {this.props.recordings.map( ({RecordingName,RecordingUri},key)=> <Row RecordingName={RecordingName} key={key} RecordingUri={RecordingUri} /> )}
-                </ScrollView>
+                <Row />
             </View>
         )
 
@@ -135,6 +129,7 @@ const styles = StyleSheet.create({
     appContainer:
     {
         flex: 1,
+        backgroundColor: '#5a005a',
     }
 })
 
