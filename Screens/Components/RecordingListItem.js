@@ -65,10 +65,10 @@ class App extends React.Component
         return(
             
             <Swipeable renderLeftActions={this.renderLeftActions}  ref={this.r} friction={2} >
-            <TouchableOpacity onPress={this.dum}>
+            <TouchableOpacity onPress={()=>this.props.navigation.push('Recording',{name: this.props.name})} >
                 <View style={styles.List}>
                 <Text style={styles.ListText}>
-                    Recording 1a
+                {this.props.name}
                 </Text>
                 
                 <View style={styles.List2}>

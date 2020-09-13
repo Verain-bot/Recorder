@@ -1,14 +1,16 @@
 import React from 'react'
-import {View,StyleSheet,Text,Button,ScrollView} from 'react-native'
+import {View,StyleSheet,Text,Button,ScrollView,Dimensions} from 'react-native'
 import {Audio} from 'expo-av'
 import {store,addRecording,removeRecording,addTempRecording,removeTempRecording,clearTemp} from '../redux'
 import {connect} from 'react-redux'
-import Row from './Components/RecordingRow'
+import Row from './Components/RecordingScreen'
 import * as FileSystem from 'expo-file-system'
 import { INTERRUPTION_MODE_ANDROID_DO_NOT_MIX, INTERRUPTION_MODE_ANDROID_DUCK_OTHERS } from 'expo-av/build/Audio'
 import BackgroundTimer from 'react-native-background-timer'
 import { cacheDirectory } from 'expo-file-system'
-
+import {TouchableOpacity} from 'react-native-gesture-handler'
+import Icon from 'react-native-vector-icons/Ionicons'
+import Entypo from 'react-native-vector-icons/Entypo'
 
 class App extends React.Component
 {
@@ -118,7 +120,24 @@ class App extends React.Component
     {
         return(
             <View style={styles.appContainer} >
-                <Row />
+                <View style={{flex: 1,alignItems: 'center',justifyContent: 'center'}}>
+                    <Entypo name="controller-record" size={Dimensions.get('window').width/2} color={!true?'#590000':'#FF4040'} />
+                </View>
+
+                <View style={styles.navView} >
+                    <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('Settings')} >
+                        <Icon name={"ios-settings-outline"} size={50} color="white" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.button,{marginLeft: 50, marginRight: 50}]}>
+                        <Icon name={true?"stop-circle-outline":"radio-button-on"} size={100} color="white" />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('Recordings')}>
+                        <Icon name="ios-list-circle-outline" size={50} color="white" />
+                    </TouchableOpacity>
+
+                </View>
             </View>
         )
 
@@ -130,7 +149,27 @@ const styles = StyleSheet.create({
     {
         flex: 1,
         backgroundColor: '#5a005a',
-    }
+        alignItems: 'stretch',
+        justifyContent: 'flex-end',
+    },
+    button:{
+        paddingBottom: 100,
+        borderColor: 'white',
+        borderWidth: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 20,
+    },
+    navView:
+    {
+        borderTopWidth: 3,
+        paddingTop: 30,
+        borderColor: 'white',
+        alignSelf: 'stretch',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+    },
 })
 
 const mapStateToProps = (state) =>({

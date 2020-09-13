@@ -11,25 +11,30 @@ import {store,persistor} from './redux'
 import { PersistGate } from 'redux-persist/integration/react'
 import Screen3 from './Screens/Screen3'
 import Screen4 from './Screens/Screen4'
+import RecordingScreen from './Screens/Components/RecordingScreen'
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator()
 
 const recordings = ({navigation}) => (
+  <Provider store={store}>
     <Stack.Navigator
     screenOptions={{headerLeft: () => <Ionicons.Button name='ios-menu' 
-      size={24} 
-      backgroundColor="purple" 
-      onPress={navigation.openDrawer}
-      />,
+    size={24} 
+    backgroundColor="purple" 
+    onPress={navigation.openDrawer}
+    />,
     headerTitleAlign: 'center',
     headerStyle: {backgroundColor: 'purple'},
     headerTitleStyle: {color: 'white'},
     }}
     headerMode="float"
+    initialRouteName="Recordings"
     >
       <Stack.Screen name="Recordings" component={Screen4} />
+      <Stack.Screen name='Recording' component={RecordingScreen} />
     </Stack.Navigator>
+    </Provider>
 )
 
 
@@ -106,7 +111,7 @@ class App extends React.Component
         style: styles.List,
         inactiveTintColor: 'white',
       }}
-      initialRouteName="Recordings"
+      
       >
 
         <Drawer.Screen name="Home" 

@@ -1,16 +1,19 @@
 import React from 'react'
-import {View,Text,StyleSheet} from 'react-native'
+import {View,Text,Button,StyleSheet} from 'react-native'
 import List from './Components/RecordingListItem'
+import {connect} from 'react-redux'
+import {removeRecording} from '../redux'
 
 class App extends React.Component
 {
+
     render()
     {
         return(
             <View style={style.AppContainer}>
-                <List />
-                <List />
-                <List />
+                {this.props.recordings.map((value,index)=>(
+                    <List navigation={this.props.navigation} name={value.RecordingName} key={index} />
+                ))}
             </View>
         )
     }
@@ -23,4 +26,8 @@ AppContainer:{
 },
 })
 
-export default App
+const mapStateToProps = (state)=>({
+    recordings: state.recording,
+})
+
+export default connect(mapStateToProps,{removeRecording},null)(App)
