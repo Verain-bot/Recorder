@@ -3,10 +3,10 @@ import {StyleSheet,Text,View,Animated} from 'react-native'
 import {TouchableOpacity,RectButton} from 'react-native-gesture-handler'
 import Icons from 'react-native-vector-icons/AntDesign'
 import {connect} from 'react-redux'
-
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { color } from 'react-native-reanimated'
-
+import * as FileSystem from 'expo-file-system'
+import {removeRecording} from '../../redux'
 class App extends React.Component
 {
     constructor(props)
@@ -19,16 +19,18 @@ class App extends React.Component
     {
         x: true,
     }
-    dum = ()=>
-    {
-        this.setState((prevState)=>({
-            x: !prevState.x,
-        }))
-    }
-    close = ()=>
+
+    delete = ()=>
     {
         this.r.current.close()
+        let x = this.props.recordings.find((value)=> value.RecordingName === this.props.name)
+        x = x.RecordingUri
+        this.props.removeRecording(x)
+        x.forEach(async(val)=>{
+            await FileSystem.deleteAsync(val)
+        })
     }
+
     renderLeftActions = (progress, dragX) => {
         const trans = dragX.interpolate({
           inputRange: [0, 50, 100, 101],
@@ -52,7 +54,7 @@ class App extends React.Component
                   backgroundColor: 'white',
                 },
               ]}>
-            <TouchableOpacity style={{flex: 1,padding:10, alignItems: 'center', justifyContent: 'center'}} onPress={this.close}>
+            <TouchableOpacity style={{flex: 1,padding:10, alignItems: 'center', justifyContent: 'center'}} onPress={this.delete}>
                 <Text style={[styles.ListText,{color: '#5a005a',fontWeight: 'bold'}]}>Delete</Text>
             </TouchableOpacity>
             </Animated.View>
@@ -114,4 +116,8 @@ const styles = StyleSheet.create({
     }
 })
 
-export default App
+const mapStateToProps = (state)=>({
+    recordings: state.recording,
+})
+
+export default connect(mapStateToProps,{removeRecording},null)(App)

@@ -6,7 +6,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 
 import {connect} from 'react-redux'
 import {addRecording,removeRecording} from '../../redux'
-import * as FileSystem from 'expo-file-system'
 import Slider from '@react-native-community/slider'
 
 

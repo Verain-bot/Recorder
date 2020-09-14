@@ -121,7 +121,7 @@ class App extends React.Component
         return(
             <View style={styles.appContainer} >
                 <View style={{flex: 1,alignItems: 'center',justifyContent: 'center'}}>
-                    <Entypo name="controller-record" size={Dimensions.get('window').width/2} color={!true?'#590000':'#FF4040'} />
+                    <Entypo name="controller-record" size={Dimensions.get('window').width/2} color={!this.state.recording?'#590000':'#FF4040'} />
                 </View>
 
                 <View style={styles.navView} >
@@ -129,8 +129,8 @@ class App extends React.Component
                         <Icon name={"ios-settings-outline"} size={50} color="white" />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.button,{marginLeft: 50, marginRight: 50}]}>
-                        <Icon name={true?"stop-circle-outline":"radio-button-on"} size={100} color="white" />
+                    <TouchableOpacity style={[styles.button,{marginLeft: 50, marginRight: 50}]} onPress={this.state.recording?this.stop:this.start} >
+                        <Icon name={this.state.recording?"stop-circle-outline":"radio-button-on"} size={100} color="white" />
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.button} onPress={()=>this.props.navigation.navigate('Recordings')}>

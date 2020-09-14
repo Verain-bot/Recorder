@@ -113,6 +113,7 @@ class App extends React.Component
     render()
     {
         return(
+            <View style={styles.AppContainer} >
             <ScrollView>
                 <Row element={()=> <Switch value={this.state.High_Quality} onTouchStart={this.onValueChange} />} 
                 name='High Quality Recording'
@@ -124,7 +125,7 @@ class App extends React.Component
                 <Row element={()=>(
                     <View>
                         <ModalScreen title="Recording Time" visible={this.state.Modal1} change={this.change1} component={()=> (
-                            <WheelPicker data={this.state.Modal1Data} indicatorWidth={1}  onItemSelected={this.onSelectModal1} selectedItem={this.state.RecordingTime.index} />
+                            <WheelPicker data={this.state.Modal1Data} indicatorWidth={1}  onItemSelected={this.onSelectModal1} selectedItem={this.state.RecordingTime.index} selectedItemTextColor="white" indicatorColor="white" />
                         ) } />
                         <Ionicons.Button name="right" color="#979695" backgroundColor="" />
                     </View>
@@ -139,7 +140,7 @@ class App extends React.Component
                 <Row element={()=>(
                     <View>
                         <ModalScreen title="Wait Time" visible={this.state.Modal2} change={this.change2} component={()=> (
-                            <WheelPicker data={this.state.Modal2Data} indicatorWidth={1}  onItemSelected={this.onSelectModal2} selectedItem={this.state.WaitTime.index} />
+                            <WheelPicker data={this.state.Modal2Data} indicatorWidth={1}  onItemSelected={this.onSelectModal2} selectedItem={this.state.WaitTime.index} selectedItemTextColor="white" indicatorColor="white"/>
                         ) } />
                         <Ionicons.Button name="right" color="#979695" backgroundColor="" />
                     </View>
@@ -161,9 +162,9 @@ class App extends React.Component
                                 />
                                 {this.state.sleepTime.enable?<View style={{flex: 1,alignItems: 'center',justifyContent: 'center'}}>
                                     <Text style={{paddingTop: 0}}> From: </Text>
-                                    <TimePicker onTimeSelected={this.onSelectModal3} initDate={this.state.sleepTime.from} />
+                                    <TimePicker onTimeSelected={this.onSelectModal3} initDate={this.state.sleepTime.from} selectedItemTextColor="white" indicatorColor="white"/>
                                     <Text style={{paddingTop: 0}}> To: </Text>
-                                    <TimePicker onTimeSelected={this.onSelectModal4} initDate={this.state.sleepTime.to} />
+                                    <TimePicker onTimeSelected={this.onSelectModal4} initDate={this.state.sleepTime.to} selectedItemTextColor="white" indicatorColor="white" />
                                 </View>:<View />}
                             </View>
                         ) } />
@@ -176,13 +177,23 @@ class App extends React.Component
                 message={Settings.Sleep_Time.message}
                 state={this.timeString()}
                 />
+                <View style={{height: 50}} />
+                
                 <CustomButton title="Save Settings"  onPress={this.onSave} />
                 <CustomButton title="Restore to defaults" onPress={this.onDefault} />
                 
             </ScrollView>
+            </View>
         )
     }
 }
+
+const styles = StyleSheet.create({
+    AppContainer:{
+        backgroundColor: '#5a005a',
+        flex: 1,
+    },
+})
 
 const mapStateToProps = (state)=>({
     settings: state.settings,

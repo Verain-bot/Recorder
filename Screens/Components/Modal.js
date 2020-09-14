@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     },
     mainModalView:
     {
-        backgroundColor: 'white',
+        backgroundColor: '#5a005a',
         flex: 1,
         borderBottomLeftRadius: 18,
         borderBottomRightRadius: 18,

@@ -23,8 +23,8 @@ class App extends React.Component
             <View style={styles.mainView} >
                 <TouchableOpacity style={styles.appContainer} disabled={this.props.disabled} onPress={this.props.onPress}>
                     <View style={styles.left}>
-                        <Text style={{fontSize: 16}}>{this.props.name}</Text>
-                        {typeof this.props.state==='string'?<Text style={{fontSize: 12,color: 'grey'}}>{this.props.state}</Text>:<Text/>}
+                        <Text style={{fontSize: 16,color: 'white',fontWeight: 'bold',}}>{this.props.name}</Text>
+                        {typeof this.props.state==='string'?<Text style={{fontSize: 12,color: 'white'}}>{this.props.state}</Text>:<Text/>}
                     </View>
                     <View style={styles.right}>
                         {this.props.element()}
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     },
     mainView:{
         borderBottomWidth: 2,
-        borderColor: '#979695',
+        borderColor: 'white',
         alignSelf:'stretch',
     },
     right:{
@@ -58,16 +58,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     bottomText:{
-        color: '#979695',
+        color: 'white',
         padding: 8,
     },
     button:
     {
-        backgroundColor: 'purple',
         alignItems: 'center',
         justifyContent: 'center',
         padding: 20,
         marginTop: 10,
+        borderColor: 'white',
+        borderWidth: 2,
+        margin: 15,
+        borderRadius: 30,
     },
     buttonText:
     {
