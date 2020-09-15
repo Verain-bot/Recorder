@@ -12,12 +12,22 @@ import {TouchableOpacity} from 'react-native-gesture-handler'
 import Icon from 'react-native-vector-icons/Ionicons'
 import Entypo from 'react-native-vector-icons/Entypo'
 
+function compareTime(time1,time2)
+{
+    let x = new Date()
+    x = x.getTime()
+    time1.getTime()
+    time2.getTime()
+    return (x>time1 && x<time2)
+}
+
+
 class App extends React.Component
 {
     state={
         errMessage: "",
         recording: false,
-        totalTime: 4000,
+        totalTime: parseInt(this.props.settings.Recording_Time.currentValue),
     }
 
     init = async() =>
@@ -33,7 +43,7 @@ class App extends React.Component
     start = async()=>
     {   
         this.setState({recording: true})
-        this.interval = BackgroundTimer.setInterval(()=>this.recordFor(1900),2500)
+        this.interval = BackgroundTimer.setInterval(()=>this.recordFor(10000),10000+parseInt(this.props.settings.Wait_time.currentValue))
         this.props.clearTemp()
     }
 
@@ -77,9 +87,13 @@ class App extends React.Component
 
     recordFor = async(duration=2000)=>
     {
+        if(this.props.settings.Sleep_Time.currentValue.enable && compareTime(this.props.settings.Sleep_Time.currentValue.from, this.props.settings.Sleep_Time.currentValue.to))
+            return false
+
         console.log('recordFor')
         const recording = new Audio.Recording()
-        await recording.prepareToRecordAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY)
+        const x = this.props.settings.Recording_Quality.currentValue?Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY:Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY
+        await recording.prepareToRecordAsync(x)
         await recording.startAsync()
         
         BackgroundTimer.setInterval(async ()=>{
@@ -95,7 +109,7 @@ class App extends React.Component
             }
 
 
-        },400)
+        },100)
 
         return recording.getURI()
     }
@@ -113,6 +127,7 @@ class App extends React.Component
         catch(error){
             this.setState({errMessage: error.message})
         }
+        
     }
 
     
@@ -175,6 +190,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) =>({
     recordings: state.recording,
     temp: state.tempRecording,
+    settings: state.settings,
 })
 
 export default connect(mapStateToProps,{addRecording,removeRecording,addTempRecording,removeTempRecording,clearTemp},null)(App)

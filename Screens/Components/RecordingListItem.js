@@ -7,6 +7,28 @@ import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { color } from 'react-native-reanimated'
 import * as FileSystem from 'expo-file-system'
 import {removeRecording} from '../../redux'
+
+export class ListItem extends React.Component
+{
+    render()
+    {
+        return(
+            <TouchableOpacity onPress={()=>this.props.navigation.push(this.props.name)} >
+                <View style={styles.List}>
+                <Text style={styles.ListText}>
+                {this.props.name}
+                </Text>
+                
+                <View style={styles.List2}>
+                <Icons.Button name="right" backgroundColor='' />
+                </View>
+
+                </View>
+            </TouchableOpacity>
+        )
+    }
+}
+
 class App extends React.Component
 {
     constructor(props)

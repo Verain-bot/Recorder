@@ -12,6 +12,9 @@ import { PersistGate } from 'redux-persist/integration/react'
 import Screen3 from './Screens/Screen3'
 import Screen4 from './Screens/Screen4'
 import RecordingScreen from './Screens/Components/RecordingScreen'
+import AboutScreen1 from './Screens/Components/AboutScreen1'
+import AboutScreen2 from './Screens/Components/AboutScreen2'
+
 
 const Drawer = createDrawerNavigator()
 const Stack = createStackNavigator()
@@ -73,6 +76,8 @@ const y = ({navigation}) => (
   headerMode="float"
   >
       <Stack.Screen name="About Us" component={Screen2} />
+      <Stack.Screen name="About the developer" component={AboutScreen1} />
+      <Stack.Screen name="About the app" component={AboutScreen2} />
     </Stack.Navigator>
 )
 
