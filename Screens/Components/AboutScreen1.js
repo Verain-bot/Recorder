@@ -37,6 +37,7 @@ class App extends React.Component
             <Row left="Developed By" right="Verain Sardana"/>
             <Row left="Version" right="1.0.0"/>
             <Row left="Date Started" right="7 August 2020"/>
+            <Row left="Date Finished" right="15 September 2020"/>
             <Row left="Email" right="verainsardana@gmail.com"/>
             <Row left="App written using" right="React Native/JavaScript" />
             <View style={styles.bigView}>
