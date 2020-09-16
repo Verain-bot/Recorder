@@ -27,7 +27,7 @@ class App extends React.Component
     state={
         errMessage: "",
         recording: false,
-        totalTime: parseInt(this.props.settings.Recording_Time.currentValue),
+        totalTime: parseInt(this.props.settings.Recording_Time.currentValue)*1000*60*60,
     }
 
     init = async() =>
@@ -67,7 +67,8 @@ class App extends React.Component
 
     stop = async()=>
     {
-        const Name = (1+Math.random()).toString()
+        const date = new Date()
+        const Name = date.toLocaleString()
         this.setState({recording: false})
         BackgroundTimer.clearInterval(this.interval)
 
