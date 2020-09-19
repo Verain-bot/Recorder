@@ -28,6 +28,7 @@ class App extends React.Component
         errMessage: "",
         recording: false,
         totalTime: parseInt(this.props.settings.Recording_Time.currentValue)*1000*60*60,
+        cr: false,
     }
 
     init = async() =>
@@ -42,9 +43,18 @@ class App extends React.Component
 
     start = async()=>
     {   
-        this.setState({recording: true})
-        this.interval = BackgroundTimer.setInterval(()=>this.recordFor(10000),10000+parseInt(this.props.settings.Wait_time.currentValue))
-        this.props.clearTemp()
+       try{ 
+            this.setState({recording: true})
+            this.interval = BackgroundTimer.setInterval(()=>{
+                if(!this.state.cr)
+                this.recordFor(10000)
+            },100)
+            this.props.clearTemp()
+        }
+        catch(err)
+        {
+            alert(err.message)
+        }
     }
 
     move = async(Name)=>
@@ -90,26 +100,26 @@ class App extends React.Component
     {
         if(this.props.settings.Sleep_Time.currentValue.enable && compareTime(this.props.settings.Sleep_Time.currentValue.from, this.props.settings.Sleep_Time.currentValue.to))
             return false
-
-        console.log('recordFor')
+        
         const recording = new Audio.Recording()
         const x = this.props.settings.Recording_Quality.currentValue?Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY:Audio.RECORDING_OPTIONS_PRESET_LOW_QUALITY
+        this.setState({cr: true})
         await recording.prepareToRecordAsync(x)
         await recording.startAsync()
         
-        BackgroundTimer.setInterval(async ()=>{
+        let interval = BackgroundTimer.setInterval(async ()=>{
             const {durationMillis,canRecord} = await recording.getStatusAsync()
             if(canRecord && durationMillis>=duration)
             {
-                recording.stopAndUnloadAsync()
                 this.props.addTempRecording(recording.getURI())
+                await recording.stopAndUnloadAsync()
+                this.setState({cr: false})
 
                 if(this.props.temp.length*duration>this.state.totalTime)
                     this.removeRecording(this.props.temp[0].RecordingUri)
                 console.log('Done')
+                BackgroundTimer.clearInterval(interval)
             }
-
-
         },100)
 
         return recording.getURI()

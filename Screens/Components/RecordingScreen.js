@@ -1,5 +1,5 @@
 import React from 'react'
-import {StyleSheet,Text,View,Dimensions, Alert} from 'react-native'
+import {StyleSheet,Text,View,Dimensions, Alert, Button} from 'react-native'
 import {TouchableOpacity} from 'react-native-gesture-handler'
 import {Audio} from 'expo-av'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -13,18 +13,21 @@ class App extends React.Component
 {
     state = {
         playing: false,
+        paused: false,
         mute: false,
         Recording: this.props.recordings.find((value)=> value.RecordingName ===  this.props.route.params.name ),
         canPlayAgain: true,
         currentDuration: 0,
         adder: 0,
         maxDuration: 192,
-        forward: false,
-        backward: false,
+        currentSound: null,
+        stop: false,
+        enabled: true,
     }
 
     onPlay = async () =>
     {
+        this.enableAfter()
         try{
             
             if(typeof this.state.Recording.RecordingUri === 'string')
@@ -51,113 +54,123 @@ class App extends React.Component
         })
     }
 
-    playSound = async (uri, next=[])=>
+    playSound = async(uri,next=[])=>
     {
         const sound = new Audio.Sound()
         await sound.loadAsync({uri: uri})
         this.changeAdder(uri)
-        await sound.playAsync()
-        sound.setOnPlaybackStatusUpdate(async ({isPlaying,isLoaded,didJustFinish,positionMillis,playableDurationMillis}) =>{
-
-            if(!didJustFinish &&this.state.backward)
-            {
-                try{
-                await sound.stopAsync()
-                await sound.unloadAsync()
-                let x = this.state.Recording.RecordingUri.indexOf(uri)
-                x = x>0?x:1
-                await this.playSound(this.state.Recording.RecordingUri[x-1],this.state.Recording.RecordingUri.slice(x))
-                console.log(x)
-
-
-                this.setState({
-                    backward: false,
-                })
-                }
-                catch(error)
-                {
-                    alert(error.message)
-                }
-            }
-
-            if( !didJustFinish &&isLoaded)
-            {
-                await sound.setIsMutedAsync(this.state.mute)
-                if(!this.state.playing)
-                    await sound.pauseAsync()
-            }
-            
-            
-            if(didJustFinish&&isLoaded)
-            {
-                await sound.unloadAsync()
-                if(next[0])
-                {
-                    await this.playSound(next[0],next.slice(1))
-                }
-                else{
-                    this.setState({playing: false,canPlayAgain: true})
-                }
-            }
-
-            if(!isPlaying&&isLoaded&&!didJustFinish)
-            {
-                this.interval = setInterval(async()=>{
-                    if(this.state.playing)
-                    {
-                        await sound.playAsync()
-                        clearInterval(this.interval)
-                    }
-                } ,500)
-            }
-
-            if(typeof positionMillis === 'number')
-                this.setState({
-                    currentDuration: parseInt((this.state.adder*playableDurationMillis + positionMillis)/1000),
-                })
-            
-
-
-            if(this.state.forward)
-            {
-                await sound.stopAsync()
-                await sound.unloadAsync()
-                await this.playSound(next[0],next.slice(1))
-                this.setState({
-                    forward: false,
-                })   
-            }
-
-        
+        this.setState({
+            currentSound: sound,
         })
+        await sound.playAsync()
+
+        this.interval = setInterval(async ()=>{
+            let status = await sound.getStatusAsync()
+            
+            if(typeof status.positionMillis === 'number')
+                this.setState({
+                    currentDuration: parseInt(this.state.adder*status.durationMillis/1000 + status.positionMillis/1000),
+                })
+            if(status.positionMillis === status.durationMillis)
+            {
+                await sound.unloadAsync()
+                clearInterval(this.interval)
+                if(next[0])
+                    await this.playSound(next[0],next.slice(1))
+                else
+                    this.setState({
+                        playing: false,
+                        canPlayAgain: true,
+                    })
+            }
+
+        },100)
     }
+
+    
 
     test = ()=>
     {
+        //play/pause
+        this.enableAfter()
+        if(this.state.canPlayAgain)
+        {
+            this.onPlay()
+            this.setState((prevState)=>({
+                canPlayAgain: !prevState.canPlayAgain,
+            }))
+        }
+        else if(this.state.playing)
+        {
+            this.state.currentSound.pauseAsync()
+        }
+        else if(!this.state.playing)
+        {
+            this.state.currentSound.playAsync()
+        }
         this.setState((prevState)=>({
             playing: !prevState.playing,
-            canPlayAgain: false,
         }))
-        if(this.state.canPlayAgain)
-            this.onPlay()
     }
 
     test2 = ()=>{
+        //mute
+        this.enableAfter()
         this.setState((prevState)=>({
             mute: !prevState.mute,
         }))
+        this.state.currentSound.setIsMutedAsync(!this.state.mute)
     }
 
-    forward = ()=>{
+    forward =  async ()=>{
+        this.enableAfter()
+        let x = this.state.currentSound
+        const array = this.state.Recording.RecordingUri
+        x = await x.getStatusAsync()
+        x = 'file://'+x.uri
+
+        await this.state.currentSound.stopAsync()
+        await this.state.currentSound.unloadAsync()
+        clearInterval(this.interval)
+        let y = array.indexOf(x)
         this.setState({
-            forward: true,
+            playing: true,
+            canPlayAgain: false,
         })
+        this.playSound(array[y+1],array.slice(y+2))
+        
+        
     }
 
-    backward = ()=> {
+    backward = async()=> {
+        this.enableAfter()
+        let x = this.state.currentSound
+        const array = this.state.Recording.RecordingUri
+        x = await x.getStatusAsync()
+        x = 'file://'+x.uri
+
+        await this.state.currentSound.stopAsync()
+        await this.state.currentSound.unloadAsync()
+        clearInterval(this.interval)
+        let y = array.indexOf(x)
         this.setState({
-            backward: true,
+            playing: true,
+            canPlayAgain: false,
         })
+        this.playSound(array[y-1],array.slice(y))
+    }
+
+    stop =async ()=>{
+        this.enableAfter()
+        this.setState({
+            canPlayAgain: true,
+            playing: false,
+            currentDuration: 0,
+            
+        })
+        await this.state.currentSound.stopAsync()
+        await this.state.currentSound.unloadAsync()
+        clearInterval(this.interval)
     }
 
     init = async()=>
@@ -185,9 +198,21 @@ class App extends React.Component
 
     componentDidMount()
     {
-        this.init()
-        
+        this.init()   
     }
+
+    enableAfter = ()=>{
+        this.setState({
+            enabled: false,
+        })
+
+        setTimeout(()=>{
+            this.setState({
+                enabled: true,
+            })
+        },500)
+    }
+
     render()
     {
         return(
@@ -214,25 +239,29 @@ class App extends React.Component
                 <View style={styles.nav}>
 
                 <View style={{flexDirection: 'row',alignItems: 'center',flex: 1,justifyContent: 'center',paddingLeft: 50}}>
-                    <TouchableOpacity onPress={this.backward} >
+                    <TouchableOpacity onPress={this.backward} disabled={this.state.enabled} >
                         <Ionicons.Button name='play-back-outline' backgroundColor='' size={25} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={this.test} >
+                    <TouchableOpacity onPress={this.test} disabled={this.state.enabled} >
                         <Ionicons.Button name={this.state.playing?'pause-outline':'play-outline'} backgroundColor='' size={40} />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={this.forward} >
+                    {!this.state.canPlayAgain?<TouchableOpacity onPress={this.stop} disabled={this.state.enabled} >
+                        <Ionicons.Button name={'stop-outline'} backgroundColor='' size={40} />
+                    </TouchableOpacity>:<View />}
+
+                    <TouchableOpacity onPress={this.forward} disabled={this.state.enabled} >
                         <Ionicons.Button name='play-forward-outline' backgroundColor='' size={25} />
                     </TouchableOpacity>
                 </View>
 
-                    <TouchableOpacity style={{alignSelf: 'flex-start',backgroundColor: ''}} onPress={this.test2}>
+                    <TouchableOpacity style={{alignSelf: 'flex-start',backgroundColor: ''}} onPress={this.test2} disabled={this.state.enabled} >
                         <Ionicons.Button name={this.state.mute?'volume-mute-outline':'volume-high-outline'} backgroundColor='' size={25} />
                     </TouchableOpacity>
                 </View>
                 </View>
-            <Text>{this.state.backward.toString()}</Text>
+            
             </View>
         )
     }
